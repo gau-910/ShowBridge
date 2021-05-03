@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShowBridge", "ShowBridge.csproj", "{718028E5-B4B8-4A42-9905-6D92F8407A70}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{718028E5-B4B8-4A42-9905-6D92F8407A70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{718028E5-B4B8-4A42-9905-6D92F8407A70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{718028E5-B4B8-4A42-9905-6D92F8407A70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{718028E5-B4B8-4A42-9905-6D92F8407A70}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DD180735-7F3A-4D6A-9813-49E1E0911056}
+	EndGlobalSection
+EndGlobal
