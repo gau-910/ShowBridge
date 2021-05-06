@@ -1,73 +1,58 @@
-﻿using System;
+﻿using ShowBridge.Models;
+using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
-using ShowBridge;
-using ShowBridge.Models;
 
 namespace ShowBridge.Controllers
 {
-    public class PRODUCTController : ApiController
+    [RoutePrefix("api/product")]
+    public class ProductController : ApiController
     {
-        private ShowBridgeEntities db = new ShowBridgeEntities();
+        private IProductService _service;
 
-        // GET: api/PRODUCT
-        public IQueryable<PRODUCT> GetPRODUCTs()
+        public ProductController()
         {
-            return db.PRODUCTs;
+            _service = new ProductService(this.ModelState, new ProductRepository());
+        }
+      
+
+        // GET: api/product
+        [Route("")]
+        public IEnumerable<Product> GetProducts()
+        {
+            return _service.ListProducts();
         }
 
-        // GET: api/PRODUCT/5
-        [ResponseType(typeof(PRODUCT))]
-        public async Task<IHttpActionResult> GetPRODUCT(long id)
+        // GET: api/product/5
+        [Route("{id:long}",Name ="GetProductById")]
+        [ResponseType(typeof(Product))]
+        public async Task<IHttpActionResult> GetProduct(long id)
         {
-            PRODUCT pRODUCT = await db.PRODUCTs.FindAsync(id);
-            if (pRODUCT == null)
+            Product product = await _service.GetProductByIdAsunc(id);
+            if (product == null)
             {
                 return NotFound();
             }
 
-            return Ok(pRODUCT);
+            return Ok(product);
         }
 
-        // PUT: api/PRODUCT/5
+        // PUT: api/product/5
+        [Route("update")]
         [ResponseType(typeof(void))]
-        public async Task<IHttpActionResult> PutPRODUCT(long id, ProductModel model)
+        public async Task<IHttpActionResult> PutProduct( ProductModel model)
         {
             try
             {
-                bool IsValid = true;
-                if (!ModelState.IsValid)
-                {
-                    IsValid = false;
-                    goto returnStatus;
-                }
-                if (id != model.ID)
-                {
-                    IsValid = false;
-                    ModelState.AddModelError("ID", "Id in Url does not match with Id in body of Url");
-                    goto returnStatus;
-                }
-                if (db.PRODUCTs.Count(e => e.NAME == model.NAME && e.ID != model.ID) > 0) //Validation To check Name of product is not assign to other product
-                {
-                    IsValid = false;
-                    ModelState.AddModelError("Name", "Product Name is Already exists for other Product");
-                    goto returnStatus;
 
-                }
-                PRODUCT p = ConvertModelTOEntity(model);
-                db.Entry(p).State = EntityState.Modified;
-
-                await db.SaveChangesAsync();
-            returnStatus:
-                if (IsValid)
+               
+                if (await _service.UpdateProductAsync(model))
                 {
                     return StatusCode(HttpStatusCode.NoContent);
                 }
@@ -77,55 +62,30 @@ namespace ShowBridge.Controllers
                 }
 
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PRODUCTExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+
             catch (Exception ex)
             {
 
-                throw;
+               throw ;
+              
             }
 
-           
+
         }
 
-        // POST: api/PRODUCT
-        [ResponseType(typeof(PRODUCT))]
-        public async Task<IHttpActionResult> PostPRODUCT(ProductModel model)
-        {
-            PRODUCT p = ConvertModelTOEntity(model);
-
+        // POST: api/product
+        [Route("add")]
+        [ResponseType(typeof(ProductModel))]
+        public async Task<IHttpActionResult> PostProduct(ProductModel model)
+        {          
 
             try
             {
-                bool IsValid = true;
-                if (!ModelState.IsValid)
+               
+                if (await _service.CreateProductAsync(model))
                 {
-                    IsValid = false;
-                    goto returnStatus;
-                }
-                if (db.PRODUCTs.Count(e => e.NAME == model.NAME) > 0)//Validation To check Name of product is not assign to other product
-                {
-                    IsValid = false;
-                    ModelState.AddModelError("Name", "Product Name is Already exists for other Product");
-                    goto returnStatus;
 
-                }
-
-                db.PRODUCTs.Add(p);
-                await db.SaveChangesAsync();
-            returnStatus:
-                if (IsValid)
-                {
-                    return CreatedAtRoute("DefaultApi", new { id = p.ID }, p);
+                    return StatusCode(HttpStatusCode.NoContent);
                 }
                 else
                 {
@@ -140,51 +100,26 @@ namespace ShowBridge.Controllers
             }
         }
 
-        // DELETE: api/PRODUCT/5
-        [ResponseType(typeof(PRODUCT))]
-        public async Task<IHttpActionResult> DeletePRODUCT(long id)
+        // DELETE: api/product/5
+        [Route("del/{id:long}")]
+        [HttpDelete]
+        [ResponseType(typeof(Product))]
+        public async Task<IHttpActionResult> DeleteProduct(long id)
         {
-            PRODUCT pRODUCT = await db.PRODUCTs.FindAsync(id);
-            if (pRODUCT == null)
+           
+            if (await _service.DeleteProductAsync(id))
             {
+                return Ok();
+            }
+            else {
                 return NotFound();
+
             }
-
-            db.PRODUCTs.Remove(pRODUCT);
-            await db.SaveChangesAsync();
-
-            return Ok(pRODUCT);
+            
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
-
-        private bool PRODUCTExists(long id)
-        {
-            return db.PRODUCTs.Count(e => e.ID == id) > 0;
-        }
-        private bool PRODUCTExists(string Name)
-        {
-            return db.PRODUCTs.Count(e => e.NAME == Name) > 0;
-        }
-
-        private PRODUCT ConvertModelTOEntity(ProductModel model)
-        {
-            return new PRODUCT
-            {
-                ID = model.ID,
-                NAME = model.NAME,
-                PRICE = model.PRICE,
-                DESCRIPTION = model.DESCRIPTION,
-                ACTIVE = (model.ACTIVE ? "1" : "0")
-
-            };
-        }
+        
+        
+      
     }
 }

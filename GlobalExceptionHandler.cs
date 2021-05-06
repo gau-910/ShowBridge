@@ -19,7 +19,9 @@ namespace ShowBridge
             context.Result = new TextPlainErrorResult
             {
                 Request = context.ExceptionContext.Request,
-                Content = "We have an Error! Please Contact To ShowBridge ."
+               // Content = context.Exception.Message;
+                Content = "Something went wrong,please try again after sometine." +
+                " if it reoccurs then Contact ShowBridge ."
             };
         }
 

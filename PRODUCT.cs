@@ -12,12 +12,12 @@ namespace ShowBridge
     using System;
     using System.Collections.Generic;
     
-    public partial class PRODUCT
+    public partial class Product
     {
-        public long ID { get; set; }
-        public string NAME { get; set; }
-        public decimal PRICE { get; set; }
-        public string DESCRIPTION { get; set; }
-        public string ACTIVE { get; set; }
+        public long Id { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public string Description { get; set; }
+        public string Active { get; set; }
     }
 }

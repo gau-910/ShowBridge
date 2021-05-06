@@ -9,16 +9,16 @@ namespace ShowBridge.Models
     public class ProductModel
     {
         
-        public long ID { get; set; }
+        public long Id { get; set; }
         [Required]
         [StringLength(50)]
-        public string NAME { get; set; }
+        public string Name { get; set; }
         [Required]
-        public decimal PRICE { get; set; }
+        public decimal Price { get; set; }
         [Required]
         [StringLength(100)]
-        public string DESCRIPTION { get; set; }
+        public string Description { get; set; }
         [Required]
-        public bool ACTIVE { get; set; }
+        public bool Active { get; set; }
     }
 }
